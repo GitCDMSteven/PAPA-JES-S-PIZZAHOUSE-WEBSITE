@@ -1,0 +1,210 @@
+.contact {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--light-black);
+  background-image: none;
+  padding-top: 1.5rem;
+  padding-bottom: 4rem; /* tightened bottom spacing */
+  position: relative;
+  gap: 1.25rem;
+}
+
+.contact__container {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 0 1rem;
+}
+
+.contact__success-msg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  height: 460px;
+  padding: 2rem;
+}
+.contact__success-msg h2 {
+  color: var(--green);
+  font-family: var(--poppins-font);
+  font-size: 1.5rem;
+
+  text-align: center;
+}
+.contact__success-msg section {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.contact-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  height: 460px;
+  padding: 2rem;
+}
+.contact-loader h2 {
+  font-size: 4rem;
+  font-family: var(--poppins-font);
+  color: var(--white);
+}
+.contact-loader img {
+  width: 10rem;
+  height: 10rem;
+  object-fit: cover;
+}
+.contact__container > form {
+  height: max-content;
+  width: 100%;
+  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin: 0;
+  margin-bottom: 2rem;
+  box-sizing: border-box;
+}
+.contact__container form h2 {
+  color: var(--white);
+  font-family: var(--poppins-font);
+  font-size: 4rem;
+}
+.contact form textarea {
+  resize: none;
+}
+.contact form .webflow-style-input {
+  margin: 0;
+}
+.contact__cover {
+  background-image: url("../../assets/images/img-one.jpeg");
+  background-position: center;
+  background-size: cover;
+  height: 12.5rem; /* slightly smaller */
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  margin-bottom: 0.5rem; /* bring it closer to the aside */
+}
+
+.contact__inner {
+  background-color: var(--yellow);
+  padding: 1.25rem 1rem; /* reduced padding */
+  text-align: left;
+  color: var(--white);
+  border-radius: 8px;
+  margin-top: -1.5rem; /* pull it up to overlap/close gap on small screens */
+  position: relative;
+  z-index: 2; /* ensure it sits above the cover if overlapping */
+}
+
+.contact__aside {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.contact__location {
+  margin-top: 1rem;
+  color: rgba(0,0,0,0.85);
+  background: rgba(255,255,255,0.1);
+  padding: 0.75rem;
+  border-radius: 6px;
+  color: var(--white);
+}
+
+.contact__location strong { display: block; margin-bottom: 0.25rem; }
+.contact__location p { margin: 0 0 0.5rem 0; }
+.contact__location__link { color: var(--white); text-decoration: underline; font-weight: 600; }
+.contact__inner p {
+  max-width: 36rem;
+  margin: 0;
+}
+
+.contact__inner h3 {
+  font-size: 1.6rem; /* reduced for small screens */
+  letter-spacing: 0.5px;
+  margin: 0 0 0.5rem 0;
+}
+
+.fullname-error-cpage,
+.input-validation-error,
+.email-error-cpage,
+.textarea-error-cpage {
+  font-family: var(--poppins-font);
+  color: var(--pizza-red);
+}
+
+.button-msg-cpage {
+  font-family: var(--poppins-font);
+  color: var(--white);
+  padding-top: 1rem;
+}
+
+.contact .active-button-style,
+.contact .active-button-style:hover {
+  -moz-transition: all ease-in-out 0.3s;
+  -o-transition: all ease-in-out 0.3s;
+  -webkit-transition: all ease-in-out 0.3s;
+  -ms-transition: all ease-in-out 0.3s;
+  transition: all ease-in-out 0.3s;
+}
+
+.contact .active-button-style:hover {
+  border-color: var(--white);
+  background-color: transparent;
+}
+
+@media screen and (min-width: 700px) {
+  .contact {
+    padding-top: 2.5rem;
+    padding-bottom: 6rem;
+  }
+
+  .contact__container {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .contact > form {
+    grid-column: 1 / 2;
+  }
+
+  .contact__inner,
+  .contact__cover {
+    grid-column: 2 / 3;
+  }
+}
+@media screen and (min-width: 1025px) {
+  /* Use a 2-column grid: main content (form) + aside (cover + inner) */
+  .contact__container {
+    grid-template-columns: 1fr 420px;
+    gap: 3rem;
+  }
+
+  .contact > form h2 {
+    font-size: 3.5rem;
+  }
+
+  .contact__cover {
+    height: 220px; /* slightly smaller to fit better */
+    border: 2px solid var(--yellow);
+    margin-bottom: 0;
+  }
+  .contact__inner {
+    margin-top: 0.5rem; /* safe spacing on larger screens */
+  }
+
+  .contact__inner {
+    padding: 2.5rem 1.5rem;
+  }
+
+  .contact__inner h3 {
+    font-size: 2.2rem; /* larger on desktop */
+    letter-spacing: 1px;
+  }
+}
