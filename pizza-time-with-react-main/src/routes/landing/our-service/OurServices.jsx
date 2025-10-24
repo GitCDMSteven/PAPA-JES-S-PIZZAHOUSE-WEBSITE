@@ -1,3 +1,5 @@
+// src/routes/landing/our-service/OurServices.jsx
+
 import "./our-service.css";
 import Tilt from "react-parallax-tilt";
 import { motion } from "framer-motion";
@@ -8,7 +10,7 @@ const OurServices = () => {
     <section className="homepage__services">
       <h2 className="pop-font">Our Services</h2>
       <p className="pop-font section-description">
-  PAPA JES’S PIZZAHOUSE provides services across all states - various foods and
+        PAPA JES’S PIZZAHOUSE provides services across all states - various foods and
         drinks, you choose! What makes us special is our teams of professionals
         with extensive knowledge of all the cuisine that we have to offer.
       </p>
@@ -19,7 +21,6 @@ const OurServices = () => {
               <motion.img
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
                 transition={{
                   duration: 2,
                 }}
