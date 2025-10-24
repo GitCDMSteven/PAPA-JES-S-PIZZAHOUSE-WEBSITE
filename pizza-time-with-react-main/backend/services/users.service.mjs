@@ -1,86 +1,35 @@
-import client from "../config/sql.mjs";
-const query = {
-  getUsers: "SELECT * FROM users",
-  getUser: "SELECT * FROM users WHERE id = ?",
-  deleteUser: "DELETE FROM users WHERE id = ?",
-  insertUserWithAddress:
-    "INSERT INTO users (id, email, password, fullname, address) VALUES(?, ?, ?, ?, ?)",
-  insertUserWithNumber:
-    "INSERT INTO users (id, email, password, fullname, number) VALUES(?, ?, ?, ?, ?)",
-  insertUserBasic:
-    "INSERT INTO users (id, email, password, fullname) VALUES(?, ?, ?, ?)",
-  updateUser:
-    "UPDATE users SET email = ?, password = ?, fullname = ?, address = ?, number = ? WHERE id = ?",
+// backend/services/users.service.mjs
+
+import { connectToDatabase } from "../config/mongodb.mjs";
+
+const getCollection = async () => {
+  const db = await connectToDatabase();
+  return db.collection("users");
 };
 
-export const getUsers = () => {
-  return new Promise((resolve, reject) => {
-    client
-      .execute(query.getUsers)
-      .then((result) => {
-        resolve(result);
-      })
-      .catch((err) => reject(err));
-  });
+export const getUsers = async () => {
+  const usersCollection = await getCollection();
+  return await usersCollection.find({}).toArray();
 };
 
-export const getUser = (id) => {
-  return new Promise((resolve, reject) => {
-    client
-      .execute({ sql: query.getUser, args: [id] })
-      .then((result) => {
-        resolve(result);
-      })
-      .catch((err) => reject(err));
-  });
+export const getUser = async (id) => {
+  const usersCollection = await getCollection();
+  return await usersCollection.findOne({ id: id });
 };
 
-export const createUser = (user) => {
-  return new Promise((resolve, reject) => {
-    const { id, email, password, fullname, address, number } = user;
-    let userQuery, params;
-
-    if (address === undefined && number === undefined) {
-      userQuery = query.insertUserBasic;
-      params = [id, email, password, fullname];
-    } else if (address === undefined) {
-      userQuery = query.insertUserWithNumber;
-      params = [id, email, password, fullname, number];
-    } else {
-      userQuery = query.insertUserWithAddress;
-      params = [id, email, password, fullname, address];
-    }
-    client
-      .execute({
-        sql: userQuery,
-        args: [...params],
-      })
-      .then((result) => {
-        resolve(result);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
+export const createUser = async (user) => {
+  const usersCollection = await getCollection();
+  // MongoDB automatically handles if 'address' or 'number' are missing
+  return await usersCollection.insertOne(user);
 };
 
-export const updateUser = (id, user) => {
-  return new Promise((resolve, reject) => {
-    const { email, password, fullname, address, number } = user;
-    let params;
-    params = [email, password, fullname, address, number];
-    client
-      .execute({ sql: query.updateUser, args: [...params, id] })
-      .then((result) => resolve(result))
-      .catch((err) => reject(err));
-  });
+export const updateUser = async (id, user) => {
+  const usersCollection = await getCollection();
+  // The $set operator updates only the fields provided in the `user` object
+  return await usersCollection.updateOne({ id: id }, { $set: user });
 };
 
-export const deleteUser = (id) => {
-  return new Promise((resolve, reject) => {
-    client
-      .execute({ sql: query.deleteUser, args: [id] })
-      .then((result) => resolve(result))
-      .catch((err) => reject(err));
-  });
+export const deleteUser = async (id) => {
+  const usersCollection = await getCollection();
+  return await usersCollection.deleteOne({ id: id });
 };

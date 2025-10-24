@@ -1,11 +1,15 @@
+// backend/api/index.mjs
+
+import dotenv from "dotenv";
+// This MUST be the first thing to run to load environment variables
+dotenv.config({ path: "backend/.env.backend" });
+
 import express, { json } from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import indexRouter from "../routes/index.route.mjs";
 
 const app = express();
 app.set("trust proxy", 1); // for Vercel
-dotenv.config({ path: ".env.backend" });
 const port = 3000;
 
 app.use(cors());
