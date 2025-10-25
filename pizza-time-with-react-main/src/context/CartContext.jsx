@@ -8,130 +8,72 @@ export const CartProvider = ({ children, isLogged }) => {
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [orderSummary, setOrderSummary] = useState({
     quantity: 0,
-    payment: 0,
+    total: 0,
   });
-  useEffect(() => {
-    if (!isLogged) {
-      setOrderSummary({
-        quantity: 0,
-        payment: 0,
-      });
-      setCart([]);
-    }
-  }, [isLogged]);
+
+  // Helper to find the index of a product in the cart, considering attributes
+  const findProductIndex = (product, attributes) => {
+    const attributeValue = attributes?.[0]?.attributeValue;
+    return cart.findIndex(item =>
+      item.id === product.id &&
+      item.userSelectedAttributes?.[0]?.attributeValue === attributeValue
+    );
+  };
+
+  // Function to update both cart state and session storage
+  const updateCartAndStorage = (newCart) => {
+    const totalQuantity = newCart.reduce((sum, item) => sum + item.quantity, 0);
+    
+    setCart(newCart);
+    setOrderSummary(prev => ({ ...prev, quantity: totalQuantity }));
+
+    sessionStorage.setItem("cartItems", JSON.stringify(newCart));
+    sessionStorage.setItem("cartQuantity", totalQuantity);
+  };
+
   const handleAddProduct = (targetProduct, userSelectedAttributes) => {
-    const productAlreadyInCart = CheckRepeatableProducts(
-      targetProduct,
-      userSelectedAttributes
-    );
-    let currentCartItems = [...cart];
-    let newQuantity;
-    if (productAlreadyInCart === undefined) {
-      const itemToAdd = targetProduct;
-      newQuantity = 1;
-      currentCartItems.push({
-        ...itemToAdd,
-        userSelectedAttributes,
-        quantity: newQuantity,
-      });
-    } else {
-      let index;
-      if (userSelectedAttributes.length === 0) {
-        index = cart.findIndex((item) => item.id === targetProduct.id);
-      } else {
-        index = cart.findIndex(
-          (item) =>
-            item.userSelectedAttributes[0]?.attributeValue ===
-              userSelectedAttributes[0].attributeValue &&
-            item.id === targetProduct.id
-        );
-      }
-      if (index !== -1) {
-        newQuantity = cart[index].quantity;
+    const existingIndex = findProductIndex(targetProduct, userSelectedAttributes);
+    const newCart = [...cart];
 
-        currentCartItems[index] = {
-          ...cart[index],
-          quantity: newQuantity + 1,
-        };
-      }
+    if (existingIndex !== -1) {
+      // Product exists, so increment its quantity
+      newCart[existingIndex].quantity += 1;
+    } else {
+      // Product is new, so add it to the cart
+      newCart.push({
+        ...targetProduct,
+        userSelectedAttributes,
+        quantity: 1,
+      });
     }
 
-    const totalCartQuantity = currentCartItems.reduce(
-      (total, item) => total + item.quantity,
-      0
-    );
-    const jsonUser = JSON.stringify(currentCartItems);
-    sessionStorage.setItem("cartItems", jsonUser);
-    setCart(currentCartItems);
-    sessionStorage.setItem("cartQuantity", totalCartQuantity);
-    setOrderSummary((prev) => ({
-      ...prev,
-      quantity: totalCartQuantity,
-    }));
+    updateCartAndStorage(newCart);
     setIsAddedToCart(true);
   };
 
-  const handleRemoveProduct = (target, targetAttr) => {
-    let productToUpdate = CheckRepeatableProducts(target, targetAttr);
-    const hasAttribute = productToUpdate[0].attributes.length > 0;
-    let productsCopy = [];
-    if (hasAttribute) {
-      productsCopy = cart
-        .map((item) =>
-          item.userSelectedAttributes[0]?.attributeValue ===
-          productToUpdate[0].userSelectedAttributes[0]?.attributeValue
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
-        )
-        .filter((item) => item.quantity > 0);
-    } else {
-      productsCopy = cart
-        .map((item) =>
-          item.id === productToUpdate[0].id
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
-        )
-        .filter((item) => item.quantity > 0);
-    }
-    setCart(productsCopy);
-    const jsonUser = JSON.stringify(productsCopy);
-    sessionStorage.setItem("cartItems", jsonUser);
+  const handleRemoveProduct = (targetProduct, userSelectedAttributes) => {
+    const existingIndex = findProductIndex(targetProduct, userSelectedAttributes);
+    if (existingIndex === -1) return; // Should not happen
 
-    const sum = [...productsCopy].reduce((a, b) => a + b.quantity, 0);
-    sessionStorage.setItem("cartQuantity", sum);
-    setOrderSummary((prev) => ({
-      ...prev,
-      quantity: sum,
-    }));
+    const newCart = [...cart];
+    const currentItem = newCart[existingIndex];
+
+    if (currentItem.quantity > 1) {
+      // Decrease quantity by 1
+      currentItem.quantity -= 1;
+    } else {
+      // Remove the item completely if quantity is 1
+      newCart.splice(existingIndex, 1);
+    }
+
+    updateCartAndStorage(newCart);
   };
+
   const clearCart = () => {
-    setCart([]);
-    setOrderSummary({
-      quantity: 0,
-      payment: 0,
-    });
-    sessionStorage.removeItem("cartItems");
-    sessionStorage.removeItem("cartQuantity");
+    updateCartAndStorage([]);
     ResetLocation();
   };
-  const CheckRepeatableProducts = (targetProduct, attributes) => {
-    let inCart = cart.some((item) => item.id === targetProduct.id);
-    if (!inCart) {
-      return undefined;
-    } else {
-      let match = cart.filter((item) => item.id === targetProduct.id);
-      let target = match.filter((item) =>
-        item.userSelectedAttributes.length === 0
-          ? true
-          : item.userSelectedAttributes[0].attributeValue ===
-            attributes[0].attributeValue
-      );
-      if (target.length === 0) {
-        return undefined;
-      }
-      return target;
-    }
-  };
+  
   const resolveItemPrice = (item) => {
     try {
       const selected = item.userSelectedAttributes?.[0]?.attributeValue;
@@ -145,49 +87,54 @@ export const CartProvider = ({ children, isLogged }) => {
     }
   };
 
-  const getTotalPrice = (items) => {
-    let total = items.reduce((acc, item) => {
-      const price = resolveItemPrice(item);
-      return acc + price * (item.quantity || 0);
-    }, 0);
-    setOrderSummary((prev) => ({
-      ...prev,
-      total: total.toFixed(2),
-    }));
-  };
   useEffect(() => {
-    getTotalPrice(cart);
+    // Calculate total price whenever the cart changes
+    const calculateTotal = () => {
+      const total = cart.reduce((acc, item) => {
+        const price = resolveItemPrice(item);
+        return acc + price * item.quantity;
+      }, 0);
+      setOrderSummary(prev => ({ ...prev, total: total.toFixed(2) }));
+    };
+    calculateTotal();
   }, [cart]);
 
   useEffect(() => {
-    if (sessionStorage.getItem("cartItems") !== null) {
-      const jsonCartItems = sessionStorage.getItem("cartItems");
-      const cartItems = JSON.parse(jsonCartItems);
-      setCart(cartItems);
-    }
-    const cartQuantitySession = sessionStorage.getItem("cartQuantity");
-    if (cartQuantitySession !== null) {
-      setOrderSummary((prev) => ({
-        ...prev,
-        quantity: cartQuantitySession,
-      }));
+    // Load cart from session storage on initial render
+    try {
+      const storedCart = sessionStorage.getItem("cartItems");
+      if (storedCart) {
+        setCart(JSON.parse(storedCart));
+      }
+      const storedQuantity = sessionStorage.getItem("cartQuantity");
+      if (storedQuantity) {
+        setOrderSummary(prev => ({ ...prev, quantity: Number(storedQuantity) }));
+      }
+    } catch (e) {
+      console.error("Failed to load cart from session storage", e);
     }
   }, []);
-  useEffect(() => {
-    if (isAddedToCart) {
-      const timer = setTimeout(() => {
-        setIsAddedToCart(false);
-      }, 2000);
 
+  useEffect(() => {
+    // Reset cart if user logs out
+    if (!isLogged) {
+      clearCart();
+    }
+  }, [isLogged]);
+
+  useEffect(() => {
+    // Show "Added to cart" message for 2 seconds
+    if (isAddedToCart) {
+      const timer = setTimeout(() => setIsAddedToCart(false), 2000);
       return () => clearTimeout(timer);
     }
   }, [isAddedToCart]);
+
   return (
     <CartContext.Provider
       value={{
         cart,
         orderSummary,
-        setOrderSummary,
         handleAddProduct,
         handleRemoveProduct,
         clearCart,

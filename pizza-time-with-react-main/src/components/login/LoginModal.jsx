@@ -1,18 +1,18 @@
 import "./loginModal.css";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import LinkButton from "../Button";
 import { useNavigate } from "react-router-dom";
 import validateForm from "../validateForm";
-import { useRef } from "react";
-import { useEffect } from "react";
-import { USERS_URL } from "../../data/constants";
+
+// Define the login URL, defaulting to your local backend
+const LOGIN_URL = import.meta.env.VITE_LOGIN_URL || "http://localhost:5000/login";
 
 const LoginModal = ({
   setIsLoginModalOpen,
   setUserConfig,
   isLoginModalOpen,
   hideMenu,
-  getUser,
+  getUser, // getUser is still useful for fetching full user details after login
 }) => {
   const navigate = useNavigate();
   const [formValue, setFormValue] = useState({ email: "", password: "" });
@@ -21,18 +21,6 @@ const LoginModal = ({
   const [verificationError, setVerificationError] = useState("");
   const validate = validateForm("login");
   const modalRef = useRef();
-  const getUsers = async () => {
-    try {
-      const response = await fetch(USERS_URL);
-      if (response.status === 429) {
-        throw new Error("Too many requests. Please wait and try again later.");
-      }
-      const body = await response.json();
-      return body.data;
-    } catch (err) {
-      console.log(err.message);
-    }
-  };
 
   const handleValidation = (e) => {
     const { name, value } = e.target;
@@ -46,49 +34,58 @@ const LoginModal = ({
     setIsLoginModalOpen(false);
     setFormValue((prev) => ({ email: prev.email, password: "" }));
     setFormError({});
+    setVerificationError("");
   };
 
   const handleLogin = async (e) => {
-    setVerificationError("");
     e.preventDefault();
-    setLoading(true);
-    setFormError(validate(formValue));
-    if (Object.keys(validate(formValue)).length > 0) {
-      setLoading(false);
+    setVerificationError("");
+    const errors = validate(formValue);
+    setFormError(errors);
+
+    if (Object.keys(errors).length > 0) {
       return;
-    } else {
-      const existingUsers = await getUsers();
-      let emailExists = [];
-      if (existingUsers) {
-        emailExists = existingUsers.filter(
-          (u) => u.email === formValue.email.toLowerCase()
-        );
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch(LOGIN_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formValue.email,
+          password: formValue.password,
+        }),
+      });
+
+      if (!response.ok) {
+        // Handle failed login (401, 404, etc.)
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Login failed");
       }
-      if (emailExists.length === 0) {
-        setLoading(false);
-        setFormValue((prev) => ({ email: prev.email, password: "" }));
-        setFormError({});
-        setVerificationError("Can't find accounts with this email");
-        return;
-      }
-      const user = emailExists[0];
-      if (user.password !== formValue.password) {
-        setLoading(false);
-        setFormValue((prev) => ({ email: prev.email, password: "" }));
-        setFormError({});
-        setVerificationError("Wrong password, try again");
-        return;
-      }
-      getUser(user.id);
-      setLoading(false);
+
+      const user = await response.json();
+
+      // Successfully logged in
+      getUser(user.id); // Fetch full, updated user details
+      setUserConfig((prev) => ({ ...prev, loggedIn: true }));
+
       hideLoginModal();
       setFormValue({ email: "", password: "" });
       setFormError({});
       setVerificationError("");
-      setUserConfig((prev) => ({ ...prev, loggedIn: true }));
       navigate("/menu");
+
+    } catch (err) {
+      setVerificationError(err.message || "An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
+
   useEffect(() => {
     if (isLoginModalOpen) {
       modalRef.current?.show();
@@ -102,6 +99,7 @@ const LoginModal = ({
       hideLoginModal();
     }
   };
+
   return (
     <dialog
       className="modal"
@@ -128,7 +126,7 @@ const LoginModal = ({
             </div>
           ) : (
             <form onSubmit={handleLogin}>
-              {verificationError.length > 0 && (
+              {verificationError && (
                 <p
                   className="modal__form__error"
                   role="alert"
@@ -141,7 +139,7 @@ const LoginModal = ({
                 value={formValue.email}
                 name="email"
                 type="text"
-                autoComplete="true"
+                autoComplete="email"
                 placeholder="Email"
                 aria-label="Email address"
                 aria-describedby={formError.email ? "email-error" : undefined}
@@ -154,7 +152,7 @@ const LoginModal = ({
                 value={formValue.password}
                 name="password"
                 type="password"
-                autoComplete="true"
+                autoComplete="current-password"
                 placeholder="Password"
                 aria-label="Password"
                 aria-describedby={
