@@ -5,50 +5,52 @@
   color: var(--white);
   font-family: var(--poppins-font);
   width: 100%;
+  padding: 2rem 1rem;
 }
 
 .careers h2 {
-  font-size: 4rem;
+  font-size: clamp(2.5rem, 5vw, 4rem);
   text-transform: uppercase;
 }
 .careers h3 {
   font-weight: 100;
-  max-width: 70%;
+  max-width: 800px; /* Constrain width */
   text-align: center;
+  margin-bottom: 2rem;
+  font-size: clamp(1rem, 3vw, 1.2rem);
 }
 
 .careers__inner {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-  max-width: 1100px;
-  margin: 3rem;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 900px;
 }
+
+/* --- RESPONSIVE FIX --- */
 .careers__listings {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  flex-direction: column; /* Stack on mobile */
+  gap: 1rem;
+  background-color: var(--lightish-black);
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+.careers__listings div {
+  flex-grow: 1;
 }
 
 .careers__inner a {
   cursor: pointer;
   border-radius: 5px;
-  border-style: solid;
-  border-width: 1px;
-  padding: 0.5rem;
-  opacity: 0.8;
+  border: 1px solid var(--pizza-red);
+  padding: 0.5rem 1.2rem;
   background-color: var(--pizza-red);
-  border-color: var(--pizza-red);
-  letter-spacing: 1px;
-  align-items: center;
-  width: max-content;
-  height: max-content;
-  color: var(--white);
-  font-size: 1rem;
-  font-weight: 400;
-  font-family: var(--poppins-font);
-  transition: background-color ease-in-out 0.3s, border-color ease-in-out 0.3s,
-    color ease-in-out 0.3s;
+  color: var(--light-black);
+  text-align: center; /* Center text in button */
+  transition: all ease-in-out 0.3s;
+  align-self: flex-start; /* Align button to the start */
 }
 
 @media (hover: hover) {
@@ -59,9 +61,14 @@
   }
 }
 
-@media screen and (max-width: 850px) {
+/* --- RESPONSIVE FIX --- */
+@media screen and (min-width: 768px) {
   .careers__listings {
-    gap: 1rem;
-    flex-direction: column;
+    flex-direction: row; /* Side-by-side on larger screens */
+    justify-content: space-between;
+    align-items: center;
+  }
+  .careers__inner a {
+    align-self: center; /* Vertically center button */
   }
 }

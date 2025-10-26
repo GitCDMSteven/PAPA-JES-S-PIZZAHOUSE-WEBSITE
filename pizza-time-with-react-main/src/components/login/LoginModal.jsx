@@ -3,16 +3,15 @@ import { useState, useRef, useEffect } from "react";
 import LinkButton from "../Button";
 import { useNavigate } from "react-router-dom";
 import validateForm from "../validateForm";
-
-// Define the login URL, defaulting to your local backend
-const LOGIN_URL = import.meta.env.VITE_LOGIN_URL || "http://localhost:5000/login";
+// --- FIX: Import the correct, exported variable from constants.js ---
+import { LOGIN_URL } from "../../data/constants";
 
 const LoginModal = ({
   setIsLoginModalOpen,
   setUserConfig,
   isLoginModalOpen,
   hideMenu,
-  getUser, // getUser is still useful for fetching full user details after login
+  getUser,
 }) => {
   const navigate = useNavigate();
   const [formValue, setFormValue] = useState({ email: "", password: "" });
@@ -32,7 +31,7 @@ const LoginModal = ({
 
   const hideLoginModal = () => {
     setIsLoginModalOpen(false);
-    setFormValue((prev) => ({ email: prev.email, password: "" }));
+    setFormValue({ email: "", password: "" });
     setFormError({});
     setVerificationError("");
   };
@@ -40,6 +39,7 @@ const LoginModal = ({
   const handleLogin = async (e) => {
     e.preventDefault();
     setVerificationError("");
+    
     const errors = validate(formValue);
     setFormError(errors);
 
@@ -50,6 +50,7 @@ const LoginModal = ({
     setLoading(true);
 
     try {
+      // Use the imported LOGIN_URL
       const response = await fetch(LOGIN_URL, {
         method: 'POST',
         headers: {
@@ -62,25 +63,20 @@ const LoginModal = ({
       });
 
       if (!response.ok) {
-        // Handle failed login (401, 404, etc.)
         const errorData = await response.json();
-        throw new Error(errorData.error || "Login failed");
+        throw new Error(errorData.error || "Login failed. Please try again.");
       }
 
       const user = await response.json();
 
-      // Successfully logged in
-      getUser(user.id); // Fetch full, updated user details
+      await getUser(user.id);
       setUserConfig((prev) => ({ ...prev, loggedIn: true }));
 
       hideLoginModal();
-      setFormValue({ email: "", password: "" });
-      setFormError({});
-      setVerificationError("");
       navigate("/menu");
 
     } catch (err) {
-      setVerificationError(err.message || "An error occurred. Please try again.");
+      setVerificationError(err.message);
     } finally {
       setLoading(false);
     }
