@@ -12,12 +12,12 @@ import Refunds from "./routes/refunds/Refunds";
 import Terms from "./routes/terms/Terms";
 import Privacy from "./routes/privacy/Privacy";
 import Careers from "./routes/careers/Careers";
-// Blog removed
 import Profile from "./routes/profile/Profile";
 import ResetLocation from "./helpers/ResetLocation";
 import { useMemo } from "react";
 import { CartProvider } from "./context/CartContext";
 import { ProductsProvider } from "./context/ProductsContext";
+// --- FIX: Import USERS_URL from constants.js ---
 import { USERS_URL } from "./data/constants";
 
 function App() {
@@ -28,17 +28,19 @@ function App() {
 
   const getUser = async (id) => {
     try {
+      // Use the USERS_URL directly here
       const response = await fetch(`${USERS_URL}/${id}`);
       if (!response.ok) {
         throw new Error(response.statusText);
       }
 
-      const { data } = await response.json();
-      setUserConfig((prev) => ({ ...prev, user: data[0] }));
-      sessionStorage.setItem("currentUser", JSON.stringify(data[0]));
+      // The backend now returns the user object directly, not inside a 'data' property
+      const user = await response.json();
+      setUserConfig((prev) => ({ ...prev, user: user }));
+      sessionStorage.setItem("currentUser", JSON.stringify(user));
       return true;
     } catch (err) {
-      console.log(err.statusText);
+      console.log(err.message); // Log the actual error message
       return false;
     }
   };
@@ -58,17 +60,16 @@ function App() {
       }
       const update = await getUser(id);
       if (!update) {
-        throw new Error(response.statusText);
+        throw new Error("Failed to re-fetch user after update.");
       }
       return true;
     } catch (err) {
-      console.log("Fetch error:", err.statusText);
+      console.log("Fetch error:", err.message);
       return false;
     }
   };
 
   useEffect(() => {
-    // Initialize user from sessionStorage if present
     try {
       const current = sessionStorage.getItem("currentUser");
       if (current) {
@@ -76,21 +77,17 @@ function App() {
         setUserConfig((prev) => ({ ...prev, user }));
       }
 
-      // Read validLogin as a boolean only if both keys exist and currentUser is non-empty
       const validLoginRaw = sessionStorage.getItem("validLogin");
       if (validLoginRaw !== null && current) {
-        const validLogin = validLoginRaw === "true" || validLoginRaw === true;
-        setUserConfig((prev) => ({ ...prev, loggedIn: !!validLogin }));
+        const validLogin = validLoginRaw === "true";
+        setUserConfig((prev) => ({ ...prev, loggedIn: validLogin }));
       }
     } catch (e) {
-      // ignore parse errors
       console.error("Failed to initialize session user", e?.message || e);
     }
-    // run once on mount
   }, []);
 
   useEffect(() => {
-    // Persist validLogin when it changes to a boolean
     try {
       sessionStorage.setItem("validLogin", userConfig.loggedIn ? "true" : "false");
     } catch (e) {
@@ -104,12 +101,8 @@ function App() {
   };
 
   const handleLogout = () => {
-    setUserConfig((prev) => ({
-      ...prev,
-      loggedIn: false,
-    }));
+    setUserConfig({ user: {}, loggedIn: false });
     hideMenu();
-    setUserConfig((prev) => ({ ...prev, user: {} }));
     ResetLocation();
     sessionStorage.clear();
   };
@@ -198,7 +191,6 @@ function App() {
           />
 
           <Route path="/contact" element={<Contact />} />
-          {/* Blog removed */}
           <Route path="/about" element={<About />} />
           <Route
             path="/register"
@@ -206,7 +198,6 @@ function App() {
               loggedIn ? (
                 <NotFound />
               ) : (
-                // only render Register when the login modal is closed
                 !isLoginModalOpen ? (
                   <Register activateLoginModal={activateLoginModal} />
                 ) : (

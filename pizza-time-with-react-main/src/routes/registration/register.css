@@ -21,13 +21,13 @@
 
 .register__inner {
   width: 100%;
-  max-width: 900px; /* container width requested */
+  max-width: 900px;
   margin: 0 auto;
   padding: 0 1rem;
 }
 
 .register__form {
-  background-color: rgba(0,0,0,0.65); /* darker so it stands out */
+  background-color: rgba(0,0,0,0.65);
   color: var(--white);
   margin: 0 auto;
   display: flex;
@@ -61,25 +61,34 @@
   background-color: transparent;
   padding: 1rem;
   border-radius: 10px;
-}
-
-.register input::placeholder {
-  font-family: var(--poppins-font);
-  letter-spacing: 1px;
-}
-
-.register input:focus-visible {
-  outline: 1px solid var(--yellow);
-}
-
-.register input[type="text"],
-.register input[type="password"] {
   color: var(--white);
   font-family: var(--poppins-font);
   font-size: 1rem;
   font-weight: 400;
   letter-spacing: 1px;
 }
+
+.register input::placeholder {
+  font-family: var(--poppins-font);
+  letter-spacing: 1px;
+  color: var(--whitish-gray);
+}
+
+/* --- FIX FOR AUTOFILL BACKGROUND --- */
+.register input:-webkit-autofill,
+.register input:-webkit-autofill:hover,
+.register input:-webkit-autofill:focus,
+.register input:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--white) !important;
+    -webkit-box-shadow: 0 0 0 30px #0a0a0a inset !important;
+    box-shadow: 0 0 0 30px #0a0a0a inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+.register input:focus-visible {
+  outline: 1px solid var(--yellow);
+}
+
 .register input[type="radio" i] {
   -moz-appearance: none;
   cursor: pointer;
@@ -107,28 +116,35 @@
   font-weight: 600;
 }
 
-/* Terms row (checkbox + text) styles */
 .terms-row {
   display: flex;
-  flex-direction: row; /* show checkbox and text in a row */
+  flex-direction: row;
   align-items: center;
   gap: 0.75rem;
-  flex-wrap: wrap; /* allow wrapping on small screens */
+  flex-wrap: wrap;
+  width: 100%; /* Ensure it takes full width to align properly */
 }
+
+/* --- FIX: Force row direction for terms checkbox --- */
 .terms-checkbox {
   display: flex;
+  flex-direction: row !important; /* Override any conflicting column styles */
   align-items: center;
-  gap: 0.6rem;
-  font-size: 0.95rem; /* reduced size requested */
+  justify-content: flex-start;
+  gap: 0.8rem; /* Slightly increased gap for better readability */
+  font-size: 0.95rem;
   color: var(--whitish-gray);
   opacity: 1;
+  width: auto; /* Prevents it from stretching unnecessarily */
+  cursor: pointer;
 }
 .terms-checkbox input[type="checkbox"] {
-  width: 0.95rem;
-  height: 0.95rem;
+  width: 1.1rem; /* Slightly larger checkbox for easier clicking */
+  height: 1.1rem;
+  cursor: pointer;
+  accent-color: var(--yellow); /* Colors the checkbox natively on modern browsers */
 }
 .terms-row .register__error {
-  /* put error on its own line when present */
   flex-basis: 100%;
   margin-top: 0.25rem;
 }
@@ -145,7 +161,6 @@
   color: var(--whitish-gray);
   border-radius: 10px;
   padding: 1rem;
-  color: var(--whitish-gray);
   font-family: var(--poppins-font);
   font-size: 1rem;
   font-weight: 400;

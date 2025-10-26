@@ -1,42 +1,44 @@
 @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Montserrat:wght@700;800;900&display=swap');
 
 .header {
-  min-height: 3rem; /* allow content to define height so title doesn't get clipped */
+  min-height: 3rem;
   top: 0;
   background-color: var(--light-black);
   position: sticky;
-  position: -webkit-sticky;
   z-index: 999;
   padding: 0.75rem 1rem;
+  width: 100%; /* Ensure header takes full width */
 }
 .header__nav {
   display: flex;
-  flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
+  max-width: 1440px; /* Match main content max-width */
+  margin: 0 auto; /* Center nav content */
 }
 .header-active-link {
   text-decoration: none;
   color: var(--pizza-red);
 }
 .logo-styling {
+  display: flex; /* Use flexbox for alignment */
   align-items: center;
-  width: 5rem;
-  height: 3rem;
+  gap: 0.5rem;
 }
 .logo {
-  width: clamp(50%, 5vw, 80%);
-  height: auto;
+  width: 3rem; /* Fixed size for better consistency */
+  height: 3rem;
+  transition: transform ease-in-out 0.3s;
 }
 
 .logo-styling h1 {
   font-family: 'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-  font-weight: 600; /* ExtraBold-ish */
+  font-weight: 600;
   line-height: 1;
   letter-spacing: 0.2px;
-  margin: 0 0 0 0.5rem;
-  /* responsive font-size: compact on mobile, large on desktop */
-  font-size: clamp(1rem, 3.2vw, 2rem);
+  margin: 0;
+  font-size: clamp(1rem, 3.2vw, 1.5rem); /* Adjusted responsive font size */
   color: var(--white);
 }
 .logo-styling h1 span {
@@ -48,25 +50,26 @@
   margin-top: 0.125rem;
 }
 
+/* --- RESPONSIVE FIX --- */
+/* Mobile menu behavior */
 .header__nav__menu {
   display: none;
+  flex-direction: column;
   gap: 2rem;
   font-weight: 400;
   font-size: 1.1rem;
   align-items: center;
-}
-.header__nav__menu.active {
   position: absolute;
-  display: flex;
-  flex-direction: column;
   top: 100%;
   left: 0;
-  z-index: 999;
-  background-color: var(--light-black);
-  padding-top: 2rem;
-  padding-bottom: 2rem;
   width: 100%;
-  min-height: 100vh;
+  background-color: var(--light-black);
+  padding: 2rem;
+  min-height: calc(100vh - 4.5rem); /* Full viewport height minus header height */
+  z-index: 998;
+}
+.header__nav__menu.active {
+  display: flex; /* Show menu when active */
 }
 
 .login-and-cart {
@@ -88,29 +91,19 @@
 }
 
 .header__nav__hamburger {
-  width: 100%;
-  max-width: 50px;
-  height: auto;
+  display: block; /* Always show hamburger on mobile */
   cursor: pointer;
-  margin-right: 0;
-  object-fit: contain;
   background-color: transparent;
   border: none;
+  z-index: 999;
 }
 .header__nav__hamburger img {
-  width: 100%;
-  height: auto;
-}
-.header__nav__menu.active .header__nav__hamburger img {
-  content: url("../../assets/images/close-btn.svg");
+  width: 2rem;
+  height: 2rem;
 }
 
 .header__nav__menu a {
   transition: color ease-in-out 0.3s;
-}
-
-.logo {
-  transition: transform ease-in-out 0.3s;
 }
 
 @media screen and (hover: hover) {
@@ -129,22 +122,23 @@
   }
   .cart-btn:hover {
     opacity: 0.8;
-    color: var(--light-black) !important;
   }
 }
 
-@media screen and (min-width: 1025px) {
+/* --- RESPONSIVE FIX --- */
+/* Tablet and Desktop styles */
+@media screen and (min-width: 768px) {
   .header__nav__menu {
     display: flex;
+    flex-direction: row; /* Horizontal layout for desktop */
+    position: static; /* Not absolutely positioned */
+    min-height: auto;
+    width: auto;
+    padding: 0;
+    background-color: transparent;
   }
   .header__nav__hamburger {
-    display: none;
-  }
-  .header__nav {
-    width: 100%;
-  }
-  .logo-styling {
-    gap: 1rem;
+    display: none; /* Hide hamburger on desktop */
   }
   .logo-styling h1 {
     font-size: clamp(1.4rem, 1.8vw, 2rem);
