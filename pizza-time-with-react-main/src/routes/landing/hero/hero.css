@@ -1,45 +1,54 @@
 .homepage__hero {
-  height: 100vh;
+  /* This is the main container for the entire hero section */
   position: relative;
-  z-index: 1;
+  height: 100vh; /* CRITICAL: Forces the section to be exactly the height of the screen */
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden; /* Prevents anything from spilling out */
+}
+
+.hero__video {
+  /* This makes the video a true background */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Centers the video */
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: cover; /* Ensures the video covers the area without being stretched */
+  z-index: 1; /* Places it at the very back */
+}
+
+.homepage__hero::before {
+  /* This is the dark overlay */
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Slightly adjusted for better contrast */
+  backdrop-filter: blur(3px);
+  z-index: 2; /* Sits on top of the video */
+}
+
+.hero__info {
+  /* This holds the text and button */
+  position: relative; /* Use relative positioning within the flex container */
+  z-index: 3; /* Sits on top of the overlay */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-.hero__video {
-  display: none;
-  position: relative;
-  width: 100%;
-  height: 100%;
-  z-index: 2;
-  object-fit: cover;
-}
-.hero__video.loaded {
-  display: inline-block;
-}
-.homepage__hero::before {
-  content: "";
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.749);
-  backdrop-filter: blur(3px);
-  top: 0;
-  z-index: 3;
+  gap: 1.5rem;
+  padding: 1rem;
+  text-align: center;
 }
 
-.hero__info {
-  padding: 1rem;
-}
-.hero__info {
-  position: absolute;
-  z-index: 4;
-  justify-content: center;
-  gap: 1.5rem;
-  align-items: center;
-  overflow-x: hidden;
-}
 .hero__info span {
   color: var(--pizza-red);
   font-family: var(--nothing-font);
@@ -49,38 +58,21 @@
 .hero__info h2 {
   text-transform: uppercase;
   font-size: clamp(2rem, 4vw, 2.5rem);
-  line-height: 3rem;
+  line-height: 1.2;
   color: var(--white);
-  font-display: swap;
 }
 
 .hero__info p {
   font-size: 1rem;
+  max-width: 600px; /* Constrain the width of the paragraph for readability */
 }
 
 .hero__interaction {
+  display: flex;
   gap: 1.3rem;
-  box-sizing: content-box;
 }
 
-.hero__interaction a:first-child {
-  color: var(--light-black);
-  background-color: var(--yellow);
-  border: 1px solid transparent;
-}
-
-.hero__interaction a:last-child {
-  border-width: 1px;
-  border-color: var(--transparent-button);
-  background-color: var(--transparent-button);
-  color: var(--light-black);
-}
-.hero__interaction a:last-child,
-.hero__interaction a:first-child {
-  transition: color ease-in-out 0.3s, border ease-in-out 0.3s,
-    background-color ease-in-out 0.3s;
-}
-
+/* --- HOVER EFFECTS (UNCHANGED) --- */
 @media screen and (hover: hover) {
   .hero__interaction a:last-child:hover {
     color: var(--light-black);
@@ -93,11 +85,5 @@
     background-color: transparent;
     border-color: var(--whitish-gray);
     background-color: var(--whitish-gray);
-  }
-}
-@media screen and (min-width: 1025px) {
-  .hero__info p {
-    width: 70%;
-    margin: 0 auto;
   }
 }

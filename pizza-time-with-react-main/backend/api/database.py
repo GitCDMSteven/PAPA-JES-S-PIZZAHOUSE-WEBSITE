@@ -15,4 +15,5 @@ subscribers_collection = db.subscribers
 users_collection.create_index('email', unique=True)
 subscribers_collection.create_index('email', unique=True)
 
-print("✅ Successfully connected to MongoDB.")
+# --- FIX: Removed the emoji that causes the crash on Windows ---
+print("Successfully connected to MongoDB.")

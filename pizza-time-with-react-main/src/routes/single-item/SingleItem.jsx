@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import AddToCartButton from "../cart/AddToCartButton";
 import Attribute from "../menu/Attribute";
 import { products } from "../../data/products";
 import { Link } from "react-router-dom";
 import "./single-item.css";
 import { motion } from "framer-motion";
 import { slideInLeft } from "../../data/animations";
+
 const SingleItem = () => {
   const [singleProduct, setSingleProduct] = useState(null);
   const [selectedAttributes, setSelectedAttributes] = useState([]);
@@ -36,9 +36,9 @@ const SingleItem = () => {
       )[0]
     );
     if (singleProduct) {
-  document.title = `${singleProduct.ItemName} | PAPA JES’S PIZZAHOUSE`;
+      document.title = `${singleProduct.ItemName} | PAPA JES’S PIZZAHOUSE`;
     }
-  }, [singleProduct?.ItemName]);
+  }, [singleProduct?.ItemName, singleProduct]);
 
   if (!singleProduct) {
     return (
@@ -105,12 +105,7 @@ const SingleItem = () => {
                     {singleProduct.ItemPrice}
                 </p>
             )}
-            <AddToCartButton
-              singleProduct={singleProduct}
-              selectedAttributes={selectedAttributes}
-              targetAttribute={targetAttribute}
-              setTargetAttribute={setTargetAttribute}
-            />
+            {/* --- REMOVED: AddToCartButton --- */}
           </div>
         </div>
       </article>
