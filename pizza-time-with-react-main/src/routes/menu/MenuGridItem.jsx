@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import AddToCartButton from "../cart/AddToCartButton";
 import Attribute from "./Attribute";
 import ResetLocation from "../../helpers/ResetLocation";
 
@@ -68,12 +67,7 @@ const MenuGridItem = ({ singleProduct }) => {
             {singleProduct.ItemPrice}
           </p>
         )}
-        <AddToCartButton
-          singleProduct={singleProduct}
-          selectedAttributes={selectedAttributes}
-          targetAttribute={targetAttribute}
-          setTargetAttribute={setTargetAttribute}
-        />
+        {/* --- REMOVED: AddToCartButton --- */}
       </div>
     </article>
   );

@@ -1,32 +1,25 @@
 import "./header.css";
-
 import logo from "../../assets/images/logo.png";
 import openMenu from "../../assets/images/open-menu.svg";
 import closeMenu from "../../assets/images/close-menu.svg";
-import { Link, NavLink, useNavigate } from "react-router-dom";
-import Cart from "../../assets/images/cart-icon-dark.png";
+import { Link, NavLink } from "react-router-dom";
 import SuccessMsg from "../SuccessMsg";
 import ResetLocation from "../../helpers/ResetLocation";
 import headerMenu from "../../data/header-menu";
 import { useCart } from "../../context/CartContext";
 
 const Header = ({
-  loginModal,
-  handleLogout,
   isNavOpen,
   setIsNavOpen,
   hideMenu,
-  isValidLogin,
-  activateLoginModal,
+  isValidLogin, // Keep props for potential future use
 }) => {
-  const { orderSummary } = useCart();
-  const navigate = useNavigate();
   const showModal = () => {
     setIsNavOpen(!isNavOpen);
   };
+
   return (
     <header aria-labelledby="title" className="header">
-      {loginModal}
       <nav
         className="header__nav flex-container flex-row txt-center"
         aria-label="Header Menu">
@@ -72,59 +65,7 @@ const Header = ({
               </NavLink>
             </li>
           ))}
-          {isValidLogin && (
-            <li>
-              <NavLink
-                onClick={() => {
-                  ResetLocation();
-                  hideMenu();
-                }}
-                className={({ isActive }) =>
-                  `txt-white ${isActive ? "header-active-link" : ""}`
-                }
-                aria-current={({ isActive }) => (isActive ? "page" : undefined)}
-                to="/profile">
-                Profile
-              </NavLink>
-            </li>
-          )}
-          <li>
-            <div className="login-and-cart">
-              {isValidLogin ? (
-                <Link
-                  to="/"
-                  className="passive-button-style txt-white"
-                  onClick={() => {
-                    ResetLocation();
-                    handleLogout();
-                  }}>
-                  Log out
-                </Link>
-              ) : (
-                <button
-                  className="passive-button-style txt-white"
-                  onClick={() => {
-                    ResetLocation();
-                    // navigate home to ensure any route-mounted panels (like /register) unmount
-                    try { navigate("/"); } catch (e) {}
-                    activateLoginModal();
-                  }}>
-                  Log in
-                </button>
-              )}
-              <NavLink
-                className="cart-btn active-button-style txt-white"
-                to="/cart"
-                onClick={() => {
-                  ResetLocation();
-                  hideMenu();
-                }}>
-                <img src={Cart} alt="" aria-hidden="true" />
-                <p>Cart</p>
-                <p>({orderSummary.quantity})</p>
-              </NavLink>
-            </div>
-          </li>
+          {/* --- REMOVED: Login and Cart Buttons --- */}
         </ul>
         <button
           className="header__nav__hamburger"

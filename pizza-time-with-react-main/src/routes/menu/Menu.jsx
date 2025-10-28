@@ -8,7 +8,6 @@ import { useState, useEffect } from "react";
 import ResetLocation from "../../helpers/ResetLocation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useProducts } from "../../context/ProductsContext";
-import { slideInLeft } from "../../data/animations";
 
 const Menu = () => {
   const [activeCategory, setActiveCategory] = useState("Menu");
@@ -42,15 +41,14 @@ const Menu = () => {
     setpageCountProducts(Math.ceil(products.length / 5));
   }, [products, setEndOffset, endOffset, itemOffset]);
   useEffect(() => {
-  document.title = `${activeCategory} | PAPA JES’S PIZZAHOUSE`;
+    document.title = `${activeCategory} | PAPA JES’S PIZZAHOUSE`;
     getProductsByCategory(activeCategory);
     resetPagination();
     ResetLocation();
   }, [activeCategory]);
   return (
     <>
-      {/* top-centered search placed above the .menu container */}
-  <form className="menu__categories__search menu__search-top" role="search" onSubmit={(e)=>e.preventDefault()}>
+      <form className="menu__categories__search menu__search-top" role="search" onSubmit={(e)=>e.preventDefault()}>
         <input
           type="text"
           placeholder="search..."
@@ -60,53 +58,49 @@ const Menu = () => {
         <img src={SearchIcon} alt="" aria-hidden="true" />
       </form>
 
-      <motion.main
-        className="menu"
-      initial={slideInLeft.initial}
-      whileInView={slideInLeft.whileInView}
-      exit={slideInLeft.exit}
-      transition={slideInLeft.transition}>
-      <MenuCategories setActiveCategory={setActiveCategory} />
-      <section className="menu__items">
-        <h2 className="visually-hidden">Menu</h2>
-        <AnimatePresence mode="sync">
-          {currentProducts.length === 0 ? (
-            <p className="menu__not-found">
-              No products found. Try to search for something else.
-            </p>
-          ) : (
-            currentProducts.map((singleProduct) => (
-              <motion.div
-                key={singleProduct.id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}>
-                <MenuGridItem
+      {/* --- FIX: Replaced <motion.main> with <main> to remove animation --- */}
+      <main className="menu">
+        <MenuCategories setActiveCategory={setActiveCategory} />
+        <section className="menu__items">
+          <h2 className="visually-hidden">Menu</h2>
+          <AnimatePresence mode="sync">
+            {currentProducts.length === 0 ? (
+              <p className="menu__not-found">
+                No products found. Try to search for something else.
+              </p>
+            ) : (
+              currentProducts.map((singleProduct) => (
+                <motion.div
                   key={singleProduct.id}
-                  singleProduct={singleProduct}
-                />
-              </motion.div>
-            ))
-          )}
-        </AnimatePresence>
-        <ScrollButton />
-      </section>
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}>
+                  <MenuGridItem
+                    key={singleProduct.id}
+                    singleProduct={singleProduct}
+                  />
+                </motion.div>
+              ))
+            )}
+          </AnimatePresence>
+          <ScrollButton />
+        </section>
 
-      <ReactPaginate
-        className="pagination"
-        breakLabel="..."
-        nextLabel=" &#62;"
-        onPageChange={handlePageClick}
-        pageRangeDisplayed={3}
-        pageCount={Math.max(1, pageCountProducts)}
-        forcePage={currentPage}
-        previousLabel="&#60;"
-        renderOnZeroPageCount={null}
-        aria-label="Blog pagination"
-      />
-  </motion.main>
-  </>
+        <ReactPaginate
+          className="pagination"
+          breakLabel="..."
+          nextLabel=" &#62;"
+          onPageChange={handlePageClick}
+          pageRangeDisplayed={3}
+          pageCount={Math.max(1, pageCountProducts)}
+          forcePage={currentPage}
+          previousLabel="&#60;"
+          renderOnZeroPageCount={null}
+          aria-label="Blog pagination"
+        />
+      </main>
+    </>
   );
 };
 
