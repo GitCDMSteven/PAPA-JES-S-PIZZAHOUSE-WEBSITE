@@ -1,0 +1,56 @@
+.homepage__bestsellers {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 3rem 1rem;
+  max-width: 1440px;
+  margin: 0 auto;
+  align-items: center;
+}
+.bestsellers__info h2 {
+  font-size: 2.5rem;
+  font-weight: 400;
+}
+.bestsellers__meals {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  width: 100%;
+  max-width: 1200px;
+}
+.bestsellers__meal {
+  background-color: var(--light-black);
+  border-radius: 8px;
+  overflow: hidden;
+  text-align: center;
+}
+.bestsellers__meal img {
+  width: 100%;
+  height: 15rem;
+  object-fit: cover;
+}
+.bestsellers__meal-details {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.bestsellers__meal-details h3 {
+  font-weight: 500;
+  font-size: 1.25rem;
+}
+.bestsellers__meal-details p {
+  color: var(--light-gray);
+  flex-grow: 1;
+}
+.bestsellers__meal-pricing p {
+  color: var(--yellow);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+@media screen and (min-width: 768px) {
+  .bestsellers__meals {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

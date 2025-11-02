@@ -50,7 +50,6 @@
   margin-top: 0.125rem;
 }
 
-/* --- RESPONSIVE FIX --- */
 /* Mobile menu behavior */
 .header__nav__menu {
   display: none;
@@ -125,7 +124,6 @@
   }
 }
 
-/* --- RESPONSIVE FIX --- */
 /* Tablet and Desktop styles */
 @media screen and (min-width: 768px) {
   .header__nav__menu {

@@ -1,0 +1,88 @@
+.single-item-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.single-item {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  max-width: 900px;
+  width: 100%;
+  background-color: var(--lightish-black);
+  color: var(--white);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.single-item img {
+  width: 100%;
+  height: 20rem;
+  object-fit: cover;
+}
+
+.single-item__info {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.single-item__info h1 {
+  font-size: clamp(2rem, 5vw, 2.5rem);
+  font-family: var(--poppins-font);
+  color: var(--yellow);
+}
+
+.single-item__ingredients {
+  color: var(--whitish-gray);
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.single-item__pricing-info h2 {
+    font-size: 1.5rem;
+    color: var(--white);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.single-item__price {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--yellow);
+}
+
+.single-item__prices {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.single-item__prices li {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.2rem;
+    color: var(--whitish-gray);
+}
+
+.single-item__prices li strong {
+    color: var(--yellow);
+    font-weight: 600;
+}
+
+@media screen and (min-width: 768px) {
+  .single-item {
+    grid-template-columns: 1fr 1fr;
+  }
+  .single-item img {
+    height: 100%;
+  }
+}

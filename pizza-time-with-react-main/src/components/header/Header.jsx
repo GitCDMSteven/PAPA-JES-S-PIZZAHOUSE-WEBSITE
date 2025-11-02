@@ -2,18 +2,11 @@ import "./header.css";
 import logo from "../../assets/images/logo.png";
 import openMenu from "../../assets/images/open-menu.svg";
 import closeMenu from "../../assets/images/close-menu.svg";
-import { Link, NavLink } from "react-router-dom";
-import SuccessMsg from "../SuccessMsg";
+import { NavLink } from "react-router-dom";
 import ResetLocation from "../../helpers/ResetLocation";
 import headerMenu from "../../data/header-menu";
-import { useCart } from "../../context/CartContext";
 
-const Header = ({
-  isNavOpen,
-  setIsNavOpen,
-  hideMenu,
-  isValidLogin, // Keep props for potential future use
-}) => {
+const Header = ({ isNavOpen, setIsNavOpen, hideMenu }) => {
   const showModal = () => {
     setIsNavOpen(!isNavOpen);
   };
@@ -65,7 +58,6 @@ const Header = ({
               </NavLink>
             </li>
           ))}
-          {/* --- REMOVED: Login and Cart Buttons --- */}
         </ul>
         <button
           className="header__nav__hamburger"
@@ -81,7 +73,6 @@ const Header = ({
           />
         </button>
       </nav>
-      <SuccessMsg />
     </header>
   );
 };
