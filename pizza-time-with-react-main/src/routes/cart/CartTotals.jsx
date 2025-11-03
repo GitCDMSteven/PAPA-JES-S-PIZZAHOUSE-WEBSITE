@@ -3,7 +3,7 @@ import LinkButton from "../../components/Button";
 import ResetLocation from "../../helpers/ResetLocation";
 import { useCart } from "../../context/CartContext";
 
-const CartTotals = ({ className, isValidLogin, activateLoginModal }) => {
+const CartTotals = ({ className }) => {
   const { orderSummary } = useCart();
   return (
     <section className={className}>
@@ -19,9 +19,7 @@ const CartTotals = ({ className, isValidLogin, activateLoginModal }) => {
       <div className="cart-totals__interaction">
         <CheckoutBtn
           className="active-button-style"
-          aria-label="Contiue with checkout"
-          isValidLogin={isValidLogin}
-          activateLoginModal={activateLoginModal}
+          aria-label="Continue with checkout"
         />
         <LinkButton
           aria-label="Go back to menu"

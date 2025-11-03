@@ -2,16 +2,16 @@ import { useState, useEffect } from "react";
 import { FaShippingFast } from "react-icons/fa";
 import { RiShoppingBagLine } from "react-icons/ri";
 import ResetLocation from "../../helpers/ResetLocation";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 
-const CheckoutForm = ({ currentUser }) => {
+const CheckoutForm = () => {
   const { orderSummary } = useCart();
   const [formValue, setFormValue] = useState({
-    fullname: currentUser.fullname,
-    email: currentUser.email,
-    address: currentUser.address,
-    number: currentUser.number,
+    fullname: "",
+    email: "",
+    address: "",
+    number: "",
     chooseDelivery: "",
     promoCode: "",
   });
@@ -30,9 +30,10 @@ const CheckoutForm = ({ currentUser }) => {
     setSubmit(true);
     ResetLocation();
   };
+  
   useEffect(() => {
     if (submit && Object.keys(formError).length === 0) {
-      return navigate("/payment");
+      navigate("/payment");
     }
   }, [submit, formError, navigate]);
 
@@ -40,77 +41,45 @@ const CheckoutForm = ({ currentUser }) => {
     const { name, value } = e.target;
     setFormValue({ ...formValue, [name]: value });
   };
+  
   const validateForm = (value) => {
     let errors = {};
-    if (!value.chooseDelivery) {
-      errors.chooseDelivery = "Please choose a delivery type";
+    if (!value.fullname) errors.fullname = "Please enter your full name";
+    if (!value.email) errors.email = "Please enter your email";
+    if (!value.chooseDelivery) errors.chooseDelivery = "Please choose a delivery type";
+    if (value.chooseDelivery === "delivery" && !value.address) {
+        errors.address = "Please enter your address for delivery";
     }
-    if (!value.promoCode && promoCode) {
-      errors.promoCode = "Please indicate your promo code";
-    }
-    if (value.promoCode && value.promoCode.length < 5 && promoCode) {
-      errors.promoCode = "Invalid promo code!";
-    }
-    if (currentUser.address === null && value.chooseDelivery === "delivery") {
-      errors.address = "Please add your address";
-    }
-    if (currentUser.number === null) {
-      errors.number = "Please add your number";
-    }
-
+    if (!value.number) errors.number = "Please enter your contact number";
+    
     return errors;
   };
 
   return (
     <section className="checkout__form">
-      <h3>
-        Personal information
-        <span>
-          <Link
-            onClick={ResetLocation}
-            aria-label="Edit your profile"
-            to="/profile">
-            Edit profile
-          </Link>
-        </span>
-      </h3>
-      <div>
-        <p>{currentUser.fullname}</p>
-        <p>{currentUser.email}</p>
-        {currentUser.address ? (
-          <p>Address: {currentUser.address}</p>
-        ) : (
-          <p className="checkout__form__address">
-            You haven't added address yet
-            <span>
-              <Link
-                onClick={ResetLocation}
-                aria-label="Add your address"
-                to="/profile">
-                Add address
-              </Link>
-            </span>
-          </p>
-        )}
-        <span className="checkout__form__error">{formError.address}</span>
-        {currentUser.number !== null ? (
-          <p>Contact number: {currentUser.number}</p>
-        ) : (
-          <p className="checkout__form__number">
-            Please add you contact number
-            <span>
-              <Link
-                aria-label="Add your phone number"
-                onClick={ResetLocation}
-                to="/profile">
-                Add phone number
-              </Link>
-            </span>
-          </p>
-        )}
-        <span className="checkout__form__error">{formError.number}</span>
-      </div>
+      <h3>Personal information</h3>
+      
       <form onSubmit={handleSubmit}>
+        <div className="webflow-style-input">
+          <input name="fullname" type="text" placeholder="Full Name" onChange={handleValidation} value={formValue.fullname} />
+        </div>
+        <span className="checkout__form__error">{formError.fullname}</span>
+
+        <div className="webflow-style-input">
+          <input name="email" type="email" placeholder="Email" onChange={handleValidation} value={formValue.email} />
+        </div>
+        <span className="checkout__form__error">{formError.email}</span>
+
+        <div className="webflow-style-input">
+          <input name="address" type="text" placeholder="Address" onChange={handleValidation} value={formValue.address} />
+        </div>
+        <span className="checkout__form__error">{formError.address}</span>
+
+        <div className="webflow-style-input">
+          <input name="number" type="tel" placeholder="Contact Number" onChange={handleValidation} value={formValue.number} />
+        </div>
+        <span className="checkout__form__error">{formError.number}</span>
+
         <fieldset className="checkout__form__delivery-details">
           <legend>Delivery details</legend>
           <label htmlFor="takeaway" className="checkout__form__takeaway">
@@ -119,7 +88,6 @@ const CheckoutForm = ({ currentUser }) => {
             <input
               id="takeaway"
               type="radio"
-              placeholder="Address"
               value="takeaway"
               name="chooseDelivery"
               onChange={handleValidation}
@@ -131,47 +99,16 @@ const CheckoutForm = ({ currentUser }) => {
             <input
               id="delivery"
               type="radio"
-              placeholder="Address"
               value="delivery"
               name="chooseDelivery"
               onChange={handleValidation}
-              aria-describedby="delivery-error"
-              aria-invalid={!!formError.chooseDelivery}
             />
           </label>
-          <span
-            className="checkout__form__error"
-            id="delivery-error"
-            aria-live="polite">
+          <span className="checkout__form__error">
             {formError.chooseDelivery}
           </span>
         </fieldset>
-        <fieldset className="checkout__form-promo-code">
-          <legend>Promo code</legend>
-          <p
-            onClick={togglePromocode}
-            aria-expanded={promoCode}
-            aria-controls="promoCode">
-            {promoCode ? "Cancel promo code" : "I have a promo code!"}
-          </p>
-
-          {promoCode && (
-            <label htmlFor="promoCode">
-              <input
-                id="promoCode"
-                name="promoCode"
-                type="text"
-                placeholder="Enter the 5-digit code"
-              />
-            </label>
-          )}
-          <span
-            className="checkout__form__error"
-            aria-live="polite"
-            id="promo-code-error">
-            {formError.promoCode}
-          </span>
-        </fieldset>
+        
         {orderSummary.quantity > 0 && (
           <ul className="checkout__totals">
             <li className="checkout__totals__content">

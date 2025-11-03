@@ -3,7 +3,7 @@ import ResetLocation from "../helpers/ResetLocation";
 
 const CartContext = createContext();
 
-export const CartProvider = ({ children, isLogged }) => {
+export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [orderSummary, setOrderSummary] = useState({
@@ -11,7 +11,6 @@ export const CartProvider = ({ children, isLogged }) => {
     total: 0,
   });
 
-  // Helper to find the index of a product in the cart, considering attributes
   const findProductIndex = (product, attributes) => {
     const attributeValue = attributes?.[0]?.attributeValue;
     return cart.findIndex(item =>
@@ -20,7 +19,6 @@ export const CartProvider = ({ children, isLogged }) => {
     );
   };
 
-  // Function to update both cart state and session storage
   const updateCartAndStorage = (newCart) => {
     const totalQuantity = newCart.reduce((sum, item) => sum + item.quantity, 0);
     
@@ -36,10 +34,8 @@ export const CartProvider = ({ children, isLogged }) => {
     const newCart = [...cart];
 
     if (existingIndex !== -1) {
-      // Product exists, so increment its quantity
       newCart[existingIndex].quantity += 1;
     } else {
-      // Product is new, so add it to the cart
       newCart.push({
         ...targetProduct,
         userSelectedAttributes,
@@ -53,16 +49,14 @@ export const CartProvider = ({ children, isLogged }) => {
 
   const handleRemoveProduct = (targetProduct, userSelectedAttributes) => {
     const existingIndex = findProductIndex(targetProduct, userSelectedAttributes);
-    if (existingIndex === -1) return; // Should not happen
+    if (existingIndex === -1) return;
 
     const newCart = [...cart];
     const currentItem = newCart[existingIndex];
 
     if (currentItem.quantity > 1) {
-      // Decrease quantity by 1
       currentItem.quantity -= 1;
     } else {
-      // Remove the item completely if quantity is 1
       newCart.splice(existingIndex, 1);
     }
 
@@ -88,7 +82,6 @@ export const CartProvider = ({ children, isLogged }) => {
   };
 
   useEffect(() => {
-    // Calculate total price whenever the cart changes
     const calculateTotal = () => {
       const total = cart.reduce((acc, item) => {
         const price = resolveItemPrice(item);
@@ -100,7 +93,6 @@ export const CartProvider = ({ children, isLogged }) => {
   }, [cart]);
 
   useEffect(() => {
-    // Load cart from session storage on initial render
     try {
       const storedCart = sessionStorage.getItem("cartItems");
       if (storedCart) {
@@ -116,14 +108,6 @@ export const CartProvider = ({ children, isLogged }) => {
   }, []);
 
   useEffect(() => {
-    // Reset cart if user logs out
-    if (!isLogged) {
-      clearCart();
-    }
-  }, [isLogged]);
-
-  useEffect(() => {
-    // Show "Added to cart" message for 2 seconds
     if (isAddedToCart) {
       const timer = setTimeout(() => setIsAddedToCart(false), 2000);
       return () => clearTimeout(timer);
